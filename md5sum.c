@@ -94,6 +94,7 @@ int main(int argc, char *argv[]) {
     unsigned char sumdata[SHA_DIGEST_LENGTH];
     char psum[41];
     int fails = 0;
+    int notread = 0;
     int hashsize;
     struct stat stbuf;
 
@@ -121,6 +122,7 @@ int main(int argc, char *argv[]) {
             if(stat(opts->filenames[i], &stbuf)) {
                 fprintf(stderr, "%s: stat '%s': %s\n", argv[0], 
                     opts->filenames[i], strerror(errno));
+                notread++;
                 continue;
             }
 
@@ -132,12 +134,14 @@ int main(int argc, char *argv[]) {
             } else {
                 fprintf(stderr, "%s: %s: Not a regular file\n", argv[0], 
                     opts->filenames[i]);
+                notread++;
                 continue;
             }
         }
 
         if(tfile == NULL) {
             perrprintf("Could not open file '%s'", opts->filenames[i]);
+            notread++;
         } else {
             if(strstr(argv[0], "sha1sum")) {
                 do_sha1sum(tfile, sumdata);
@@ -195,9 +199,17 @@ int main(int argc, char *argv[]) {
             if(opts->vmode != VMODE_SILENT) {
                 printf("%s: WARNING: %d of %d computed checksums did NOT match\n", argv[0], fails, opts->filect);
             }
-            return 1;
+        }
+        if(notread > 0) {
+            if(opts->vmode != VMODE_SILENT) {
+                printf("%s: WARNING: %d listed file could not be read\n", argv[0], notread);
+            }
         }
     }
 
-    return 0;
+    if(fails > 0 || notread > 0) {
+        return 1;
+    } else {
+        return 0;
+    }
 }

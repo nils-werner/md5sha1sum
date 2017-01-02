@@ -83,3 +83,4 @@ THANKS IN ORDER
 
 * Steve Moon for a compile fix which can be found in version 0.9.4.
 * Ralf S. Engelschall for a fix which can be found in version 0.9.5.
+* Nils Werner for fixing return values in case of missing files.
