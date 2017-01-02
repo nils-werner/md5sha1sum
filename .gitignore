@@ -1,0 +1,6 @@
+*.mk
+md5sum
+md5sum.o
+parseopts.o
+sha1sum
+ripemd160sum
